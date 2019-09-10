@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Mars</string>
+    <string-array name="l_languages">
+        <item>Select A Language</item>
+        <item>Chinese</item>
+        <item>English</item>
+    </string-array>
+    <string-array name="r_languages">
+        <item>Select A Language</item>
+        <item>Chinese</item>
+        <item>English</item>
+    </string-array>
+</resources>
