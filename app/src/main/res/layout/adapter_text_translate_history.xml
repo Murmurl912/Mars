@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="8dp"
+    android:layout_margin="8dp">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton android:id="@+id/main_text_tab_history_speak_source_content_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:contentDescription="Speak Content"
+                android:src="@drawable/ic_speak_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <ImageButton android:id="@+id/main_text_tab_history_fav_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:contentDescription="Speak Content"
+                android:src="@drawable/ic_fav_border_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+
+        <TextView android:id="@+id/main_text_tab_history_source_text"
+            android:background="@android:color/transparent"
+            android:gravity="top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"/>
+
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton android:id="@+id/main_text_tab_history_speak_target_content_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:contentDescription="Speak Content"
+                android:src="@drawable/ic_speak_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <TextView android:id="@+id/main_text_tab_history_target_text"
+            android:background="@android:color/transparent"
+            android:gravity="top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"/>
+
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <ImageButton android:id="@+id/main_text_tab_history_copy_translation"
+                style="?android:attr/buttonBarButtonStyle"
+                android:src="@drawable/ic_copy_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <ImageButton android:id="@+id/main_text_tab_history_more"
+                style="?android:attr/buttonBarButtonStyle"
+                android:src="@drawable/ic_more_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+

@@ -1,9 +1,12 @@
 package com.example.mars;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -11,10 +14,14 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.example.mars.ui.CameraTranslationFragment;
 import com.example.mars.ui.TextTranslationFragment;
 import com.example.mars.ui.VoiceTranslationFragment;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import org.w3c.dom.Text;
@@ -23,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
+public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, NavigationView.OnNavigationItemSelectedListener {
 
     public static final String TAG = "MainActivity";
 
@@ -36,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     TextTranslationFragment textTranslationFragment;
     VoiceTranslationFragment voiceTranslationFragment;
     MainTabFragmentAdapter mainTabFragmentAdapter;
+
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +75,24 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
         mainTabLayout.setupWithViewPager(mainViewPager);
         mainTabLayout.addOnTabSelectedListener(this);
+
+        // set up drawer
+        drawerLayout = findViewById(R.id.main_drawer_layout);
+
+        // set up navigation view
+        navigationView = findViewById(R.id.main_navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void closeDrawer() {
+        if(drawerLayout == null) {
+            return;
+        }
+
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+        Log.d(TAG, "closeDrawer()");
     }
 
     @Override
@@ -81,7 +109,64 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
         Log.d(TAG, "Tab Reselected at Position: " + tab.getPosition() + " Name: " + tab.getText());
+        if(tab.getPosition() == 0) {
+            Log.d(TAG, "scrollToStart Called");
+            textTranslationFragment.scrollToStart();
+        }
+    }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.main_navigation_menu_item_home:
+                closeDrawer();
+                break;
+            case R.id.main_navigation_menu_item_favorite:
+                closeDrawer();
+                break;
+            case R.id.main_navigation_menu_item_offline:
+                closeDrawer();
+                break;
+            case R.id.main_navigation_menu_item_setting:
+                closeDrawer();
+                break;
+            case R.id.main_navigation_menu_item_about:
+                closeDrawer();
+                break;
+            case R.id.main_navigation_menu_item_help:
+                closeDrawer();
+                break;
+            default:
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Log.d(TAG,
+                "onOptionsItemSelected: id = "
+                        + item.getItemId() + ", title = "
+                        + item.getTitle());
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                break;
+            default:
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
     }
 
     private class MainTabFragmentAdapter extends FragmentPagerAdapter {

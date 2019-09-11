@@ -35,70 +35,84 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    style="?android:attr/buttonBarStyle"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <Spinner android:id="@+id/main_source_language_spinner"
-                        android:padding="16dp"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:entries="@array/l_languages"
-                        />
-
-                    <ImageButton android:id="@+id/main_swap_language_button"
-                        style="?android:attr/buttonBarButtonStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0"
-                        android:src="@drawable/ic_swap_light"
-                        />
-
-                    <Spinner android:id="@+id/main_target_language_spinner"
-                        android:padding="16dp"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:entries="@array/r_languages"
-                        />
-                </LinearLayout>
-
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/main_tab_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:tabTextAppearance="@style/TabTextStyle"
-                    app:layout_anchorGravity="center">
-
-                    <com.google.android.material.tabs.TabItem
-                        android:id="@+id/main_text_tab_item"
+                    android:layout_margin="8dp">
+                    <LinearLayout
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Text" />
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            style="?android:attr/buttonBarStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
-                    <com.google.android.material.tabs.TabItem
-                        android:id="@+id/main_camera_tab_item"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Camera" />
+                            <Spinner android:id="@+id/main_source_language_spinner"
+                                android:padding="16dp"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:entries="@array/l_languages"
+                                />
 
-                    <com.google.android.material.tabs.TabItem
-                        android:id="@+id/main_voice_tab_item"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Voice"
-                        />
+                            <ImageButton android:id="@+id/main_swap_language_button"
+                                style="?android:attr/buttonBarButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0"
+                                android:src="@drawable/ic_swap_light"
+                                />
 
-                </com.google.android.material.tabs.TabLayout>
+                            <Spinner android:id="@+id/main_target_language_spinner"
+                                android:padding="16dp"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:entries="@array/r_languages"
+                                />
+                        </LinearLayout>
+
+                        <com.google.android.material.tabs.TabLayout
+                            android:id="@+id/main_tab_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:tabTextAppearance="@style/TabTextStyle"
+                            app:layout_anchorGravity="center">
+
+                            <com.google.android.material.tabs.TabItem
+                                android:id="@+id/main_text_tab_item"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Text" />
+
+                            <com.google.android.material.tabs.TabItem
+                                android:id="@+id/main_camera_tab_item"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Camera" />
+
+                            <com.google.android.material.tabs.TabItem
+                                android:id="@+id/main_voice_tab_item"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Voice"
+                                />
+
+                        </com.google.android.material.tabs.TabLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
 
                 <androidx.viewpager.widget.ViewPager
                     android:id="@+id/main_view_pager"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

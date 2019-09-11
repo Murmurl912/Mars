@@ -1,13 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:gravity="center"
-        android:text="Text"
-        android:textSize="40dp"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/main_text_tab_nested_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="8dp"
+                android:layout_margin="8dp">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="?android:attr/buttonBarStyle">
+
+                    <LinearLayout
+                        style="?android:attr/buttonBarStyle"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageButton android:id="@+id/main_text_tab_speak_source_button"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:contentDescription="Speak Content"
+                            android:src="@drawable/ic_speak_light"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"/>
+                        <ImageButton
+                            android:id="@+id/main_text_tab_clear_source_content_button"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:contentDescription="Clear Content"
+                            android:src="@drawable/ic_clear_light"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <EditText android:id="@+id/main_text_tab_source_edit_text"
+                        android:background="@android:color/transparent"
+                        android:hint="Source Language"
+                        android:gravity="top"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:minLines="4"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"/>
+                    <ImageButton
+                        android:id="@+id/main_text_tab_translate_button"
+                        android:contentDescription="Translate"
+                        android:layout_gravity="end"
+                        style="?android:attr/buttonBarButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_send_light"/>
+                    <LinearLayout
+                        style="?android:attr/buttonBarStyle"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageButton android:id="@+id/main_text_tab_speak_target_button"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:contentDescription="Speak Content"
+                            android:src="@drawable/ic_speak_light"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"/>
+                        <ImageButton android:id="@+id/main_text_tab_favorite"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:contentDescription="Clear Content"
+                            android:src="@drawable/ic_fav_border_light"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <TextView android:id="@+id/main_text_tab_target_text"
+                        android:background="@android:color/transparent"
+                        android:gravity="top"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"/>
+
+                    <LinearLayout
+                        style="?android:attr/buttonBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"/>
+                        <ImageButton android:id="@+id/main_text_tab_copy_translation"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:src="@drawable/ic_copy_light"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <ImageButton android:id="@+id/main_text_tab_more"
+                            style="?android:attr/buttonBarButtonStyle"
+                            android:src="@drawable/ic_more_light"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone">
+                        <TextView
+                            android:text="Other Translate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_text_tab_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>
