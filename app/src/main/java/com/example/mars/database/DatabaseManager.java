@@ -3,7 +3,6 @@ package com.example.mars.database;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +25,13 @@ public class DatabaseManager {
         if(database.getVersion() == 0) {
             database.execSQL("create table History (" +
                     "source text, " +
-                    "target text, i" +
+                    "target text, " +
                     "time integer, " +
                     "is_favorite integer, " +
                     "primary key(source))");
             database.setVersion(1);
         }
+
     }
 
     public boolean contain(History history) {
@@ -39,7 +39,7 @@ public class DatabaseManager {
             return false;
         }
         if(histories.isEmpty()) {
-            Cursor cursor = database.rawQuery("select * from History order by time asc", null);
+            Cursor cursor = database.rawQuery("select * from History", null);
             while (cursor.moveToNext()) {
                 histories.add(new History(cursor.getLong(2), cursor.getInt(3) != 0,
                         cursor.getString(0), cursor.getString(1)));
@@ -57,22 +57,21 @@ public class DatabaseManager {
         if(contain(history)) {
             return;
         }
-
         database.execSQL("insert into History values("
-                + history.getSource() + ", "
-                + history.getTarget()+ ", "
+                + "'" + escapeSingleQuote(history.getSource()) + "', "
+                + "'" + escapeSingleQuote(history.getTarget()) + "', "
                 + history.getTime()+ ", "
                 + (history.isFavorite() ? 1 : 0) + ")");
         histories.add((History)history.clone());
     }
 
     public void remove(History history) {
-        if(history == null) {
+        if(history == null || history.getSource().equals("")) {
             return;
         }
 
         if(contain(history)) {
-            database.execSQL("delete from History where source = " + history.getSource());
+            database.execSQL("delete from History where source = '" + escapeSingleQuote(history.getSource()) + "'");
         }
         histories.remove(history);
     }
@@ -82,10 +81,50 @@ public class DatabaseManager {
             return;
         }
 
-        database.execSQL("update History set target = " + value.getTarget() + ", time = " + value.getTime() + ", is_favorite = " + (value.isFavorite() ? 1 : 0));
+        database.execSQL("update History set target = " +
+                "'" + escapeSingleQuote(value.getTarget()) +
+                "', time = " + value.getTime() +
+                ", is_favorite = " + (value.isFavorite() ? 1 : 0) +
+                " where source = '" + escapeSingleQuote(value.getSource()) + "'");
         History history = histories.get(histories.indexOf(value));
         history.setTime(value.getTime());
         history.setFavorite(value.isFavorite());
         history.setTarget(value.getTarget());
+    }
+
+    public void requestLoadHistoryRecord(List<History> container, OnHistoryRecordLoadComplete callback) {
+        List<History> list = container == null ? new ArrayList<>() : container;
+        if(histories.isEmpty()) {
+            Cursor cursor = database.rawQuery("select * from History", null);
+            while (cursor.moveToNext()) {
+                histories.add(new History(cursor.getLong(2), cursor.getInt(3) != 0,
+                        cursor.getString(0), cursor.getString(1)));
+            }
+            cursor.close();
+        }
+        for(History h : histories) {
+            list.add((History)h.clone());
+        }
+        callback.onHistoryRecordLoadComplete(0, list);
+    }
+
+    public String escapeSingleQuote(String input) {
+        StringBuilder output = new StringBuilder();
+        if(input == null || input.equals("")) {
+            return output.toString();
+        }
+        char[] chars = input.toCharArray();
+        for(char c : chars) {
+            if(c == '\'') {
+                output.append('\\').append(c);
+            } else {
+                output.append(c);
+            }
+        }
+        return output.toString();
+    }
+
+    public interface OnHistoryRecordLoadComplete {
+        void onHistoryRecordLoadComplete(int status, List<History> data);
     }
 }

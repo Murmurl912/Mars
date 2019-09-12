@@ -1,5 +1,8 @@
 package com.example.mars.ui;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -43,7 +46,6 @@ public class TextTranslationFragment extends Fragment {
     private View view;
     PopupMenu popupMenu;
 
-    private TextToSpeech tts;
     private boolean isTTSSuccess;
 
     private TextTranslateHistoryAdapter adapter;
@@ -66,7 +68,7 @@ public class TextTranslationFragment extends Fragment {
         more = view.findViewById(R.id.main_text_tab_more);
         recyclerView = view.findViewById(R.id.main_text_tab_recycler_view);
         this.view = view;
-        popupMenu = new PopupMenu(getContext(), more);
+        popupMenu = new PopupMenu(Objects.requireNonNull(getContext()), more);
         popupMenu.getMenuInflater().inflate(R.menu.menu_main_text_translate_more, popupMenu.getMenu());
 
         new Thread(this::setupListener).start();
@@ -77,7 +79,20 @@ public class TextTranslationFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isTTSSuccess = false;
-        adapter = new TextTranslateHistoryAdapter(getContext());
+        adapter = new TextTranslateHistoryAdapter(getContext(), getActivity());
+        loadHistory();
+    }
+
+    private void loadHistory() {
+        new Thread(()->{
+            ((MainApplication) Objects
+                    .requireNonNull(getActivity())
+                    .getApplication())
+                    .databaseManager
+                    .requestLoadHistoryRecord(null, (status, data)->{
+                        adapter.setHistories(data);
+                    });
+        }).start();
     }
 
     private void setupListener() {
@@ -110,24 +125,35 @@ public class TextTranslationFragment extends Fragment {
         more.setOnClickListener(v->{
             popupMenu.show();
         });
+
+        copy.setOnClickListener((v)->{
+            ClipboardManager cm = (ClipboardManager) Objects.requireNonNull(getContext()).getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData mClipData = ClipData.newPlainText("copy", targetText.getText().toString());
+            Objects.requireNonNull(cm).setPrimaryClip(mClipData);
+            Toast.makeText(getContext(), "Copied!", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void speak(String text) {
-        if(tts == null) {
-            tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int i) {
-                    if(i == TextToSpeech.SUCCESS) {
-                        isTTSSuccess = true;
-                    }
+
+        TextToSpeech tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                if(i == TextToSpeech.SUCCESS) {
+                    isTTSSuccess = true;
+                } else {
+                    isTTSSuccess = false;
+                    Toast.makeText(getContext(), "TTS Failed To Start!", Toast.LENGTH_SHORT).show();
+
                 }
-            });
-        }
+            }
+        });
 
         if(!isTTSSuccess) {
-            Toast.makeText(getContext(), "TTS Failed",Toast.LENGTH_SHORT).show();
+            return;
         }
-        Toast.makeText(getContext(), "Speaking",Toast.LENGTH_SHORT).show();
+
+        Toast.makeText(getContext(), "Speaking!",Toast.LENGTH_SHORT).show();
 
         if(tts.isSpeaking()) {
             tts.stop();
@@ -150,12 +176,14 @@ public class TextTranslationFragment extends Fragment {
         };
 
         // here to request translate
-
+        targetText.setText("Translated: " + inputSource.getText().toString());
+        recordHistoryToDatabase();
     }
 
     private void recordHistoryToDatabase() {
         DatabaseManager manager = ((MainApplication) Objects.requireNonNull(getActivity()).getApplication())
                 .databaseManager;
+        history.setTarget(targetText.getText().toString());
         if(manager.contain(history)) {
             manager.update(history);
         } else {
@@ -171,11 +199,17 @@ public class TextTranslationFragment extends Fragment {
 
     private void clear() {
         hideKeyboard();
+        addFavorite.setImageResource(R.drawable.ic_fav_border_light);
+        history = null;
         inputSource.setText("");
         targetText.setText("");
     }
 
     private void addFavorite(boolean isFavorite) {
+        if(history == null) {
+            return;
+        }
+        history.setFavorite(isFavorite);
         if(isFavorite) {
             addFavorite.setImageResource(R.drawable.ic_fav_light);
         } else {

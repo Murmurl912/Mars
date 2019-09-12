@@ -98,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         Log.d(TAG, "Tab Selected at Position: " + tab.getPosition() + " Name: " + tab.getText());
+        if(tab.getPosition() == 1) {
+            cameraTranslationFragment.startCameraPreview();
+        }
     }
 
     @Override

@@ -1,3 +1,2 @@
-include ':app'
+include ':app', 'opencv_sdk'
 rootProject.name='Mars'
-include ':opencv_java'
