@@ -1,9 +1,9 @@
 package com.example.mars.ui;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,18 +11,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Adapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mars.MainApplication;
 import com.example.mars.R;
+import com.example.mars.database.DatabaseManager;
 import com.example.mars.database.History;
+import com.example.mars.translate.TranslateService;
 
 import java.util.Objects;
 
@@ -40,12 +41,15 @@ public class TextTranslationFragment extends Fragment {
     private ImageButton more;
     private RecyclerView recyclerView;
     private View view;
+    PopupMenu popupMenu;
 
     private TextToSpeech tts;
     private boolean isTTSSuccess;
-    private boolean isFavorite;
 
     private TextTranslateHistoryAdapter adapter;
+    private History history;
+
+    private TranslateService translateService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,6 +66,8 @@ public class TextTranslationFragment extends Fragment {
         more = view.findViewById(R.id.main_text_tab_more);
         recyclerView = view.findViewById(R.id.main_text_tab_recycler_view);
         this.view = view;
+        popupMenu = new PopupMenu(getContext(), more);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_main_text_translate_more, popupMenu.getMenu());
 
         new Thread(this::setupListener).start();
         return view;
@@ -71,86 +77,113 @@ public class TextTranslationFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isTTSSuccess = false;
-        isFavorite = false;
         adapter = new TextTranslateHistoryAdapter(getContext());
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private void setupListener() {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
 
         speakSource.setOnClickListener(v->{
-            cancel();
-            if(tts == null) {
-                tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-                    @Override
-                    public void onInit(int i) {
-                        if(i == TextToSpeech.SUCCESS) {
-                            Toast.makeText(getContext(), "Speaking",Toast.LENGTH_SHORT).show();
-                            isTTSSuccess = true;
-                        }
-                    }
-                });
-            }
-
-            if(!isTTSSuccess) {
-                Toast.makeText(getContext(), "TTS Failed",Toast.LENGTH_SHORT).show();
-            }
-
-            if(tts.isSpeaking()) {
-                tts.stop();
-            }
-            tts.speak(inputSource.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+            hideKeyboard();
+            speak(inputSource.getText().toString());
         });
 
         clearContent.setOnClickListener(v->{
-            inputSource.setText("");
+            clear();
         });
 
         translate.setOnClickListener(v->{
-            targetText.setText("Translated: " + inputSource.getText());
-            adapter.add(new History(System.currentTimeMillis(), false, inputSource.getText().toString(), targetText.getText().toString()));
-            cancel();
+           translate();
         });
 
         speakTarget.setOnClickListener(v->{
-            cancel();
-            if(tts == null) {
-                tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-                    @Override
-                    public void onInit(int i) {
-                        if(i == TextToSpeech.SUCCESS) {
-                            Toast.makeText(getContext(), "Speaking",Toast.LENGTH_SHORT).show();
-                            isTTSSuccess = true;
-                        }
-                    }
-                });
-            }
-
-            if(!isTTSSuccess) {
-                Toast.makeText(getContext(), "TTS Failed",Toast.LENGTH_SHORT).show();
-            }
-
-            if(tts.isSpeaking()) {
-                tts.stop();
-            }
-            tts.speak(targetText.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+            hideKeyboard();
+            speak(targetText.getText().toString());
         });
 
         addFavorite.setOnClickListener(v->{
-            if(isFavorite) {
-                addFavorite.setImageResource(R.drawable.ic_fav_border_light);
-                isFavorite = false;
-            } else {
-                addFavorite.setImageResource(R.drawable.ic_fav_light);
-                isFavorite = true;
-            }
+            addFavorite(true);
+        });
+
+        more.setOnClickListener(v->{
+            popupMenu.show();
         });
     }
 
-    private void cancel() {
+    private void speak(String text) {
+        if(tts == null) {
+            tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int i) {
+                    if(i == TextToSpeech.SUCCESS) {
+                        isTTSSuccess = true;
+                    }
+                }
+            });
+        }
+
+        if(!isTTSSuccess) {
+            Toast.makeText(getContext(), "TTS Failed",Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(getContext(), "Speaking",Toast.LENGTH_SHORT).show();
+
+        if(tts.isSpeaking()) {
+            tts.stop();
+        }
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    private void translate() {
+        targetText.setText("");
+
+        if(history == null) {
+            history = new History(System.currentTimeMillis(), false, inputSource.getText().toString(), "");
+        } else {
+            history.setSource(inputSource.getText().toString());
+            history.setTime(System.currentTimeMillis());
+        }
+
+        TranslateService.OnTranslateReturn translateCallback = (status, result) -> {
+
+        };
+
+        // here to request translate
+
+    }
+
+    private void recordHistoryToDatabase() {
+        DatabaseManager manager = ((MainApplication) Objects.requireNonNull(getActivity()).getApplication())
+                .databaseManager;
+        if(manager.contain(history)) {
+            manager.update(history);
+        } else {
+            manager.add(history);
+        }
+
+        adapter.add(0, history);
+    }
+
+    private void onKeyTypeListener() {
+
+    }
+
+    private void clear() {
+        hideKeyboard();
+        inputSource.setText("");
+        targetText.setText("");
+    }
+
+    private void addFavorite(boolean isFavorite) {
+        if(isFavorite) {
+            addFavorite.setImageResource(R.drawable.ic_fav_light);
+        } else {
+            addFavorite.setImageResource(R.drawable.ic_fav_border_light);
+        }
+    }
+
+    private void hideKeyboard() {
         inputSource.clearFocus();
         InputMethodManager inputMethodManager =
                 (InputMethodManager) Objects.requireNonNull(getContext())

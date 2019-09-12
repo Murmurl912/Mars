@@ -91,6 +91,22 @@ public class TextTranslateHistoryAdapter extends RecyclerView.Adapter<TextTransl
         notifyItemChanged(index);
     }
 
+    private void speak(String text) {
+
+    }
+
+    private void copyTranslation() {
+
+    }
+
+    private void more() {
+
+    }
+
+    private void favorite() {
+
+    }
+
     @NonNull
     @Override
     public TextTranslateHistoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,

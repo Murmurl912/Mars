@@ -58,9 +58,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textMultiLine"
-                        android:minLines="4"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"/>
+                        android:paddingStart="22dp"
+                        android:paddingEnd="22dp"/>
                     <ImageButton
                         android:id="@+id/main_text_tab_translate_button"
                         android:contentDescription="Translate"
@@ -95,12 +94,12 @@
 
                     <TextView android:id="@+id/main_text_tab_target_text"
                         android:background="@android:color/transparent"
-                        android:gravity="top"
+                        android:textIsSelectable="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
 
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"/>
+                        android:paddingStart="22dp"
+                        android:paddingEnd="22dp"/>
 
                     <LinearLayout
                         style="?android:attr/buttonBarStyle"

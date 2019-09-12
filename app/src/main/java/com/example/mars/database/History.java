@@ -18,8 +18,9 @@ public class History {
     public History(long time, boolean isFavorite, String source, String target) {
         this.time = time;
         this.isFavorite = isFavorite;
-        this.source = source;
-        this.target = target;
+        this.source = source == null ? "" : source;
+        this.target = target == null ? "" : target;
+
     }
 
     public void setFavorite(boolean isFavorite) {
@@ -31,11 +32,11 @@ public class History {
     }
 
     public void setSource(String source) {
-        this.source = source;
+        this.source = source == null ? "" : source;
     }
 
     public void setTarget(String target) {
-        this.target = target;
+        this.target = target == null ? "" : target;
     }
 
     public boolean isFavorite() {
@@ -61,15 +62,12 @@ public class History {
 
         History history = (History) o;
 
-        if (time != history.time) return false;
-        return source != null ? source.equals(history.source) : history.source == null;
+        return source.equals(history.source);
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (time ^ (time >>> 32));
-        result = 31 * result + (source != null ? source.hashCode() : 0);
-        return result;
+        return source.hashCode();
     }
 
     @NonNull
