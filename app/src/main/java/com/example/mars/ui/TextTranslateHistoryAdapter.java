@@ -111,6 +111,12 @@ public class TextTranslateHistoryAdapter extends RecyclerView.Adapter<TextTransl
         });
     }
 
+    public int find(History history) {
+        if(history == null) {
+            return -1;
+        }
+        return histories.indexOf(history);
+    }
 
     @NonNull
     @Override

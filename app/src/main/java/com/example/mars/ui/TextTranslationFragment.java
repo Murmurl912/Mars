@@ -186,11 +186,14 @@ public class TextTranslationFragment extends Fragment {
         history.setTarget(targetText.getText().toString());
         if(manager.contain(history)) {
             manager.update(history);
+            if(adapter.find(history) != -1){
+                adapter.update(adapter.find(history), history);
+            }
         } else {
             manager.add(history);
-        }
+            adapter.add(0, history);
 
-        adapter.add(0, history);
+        }
     }
 
     private void onKeyTypeListener() {
