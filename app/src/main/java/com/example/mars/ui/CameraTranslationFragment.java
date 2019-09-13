@@ -1,10 +1,12 @@
 package com.example.mars.ui;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -14,33 +16,23 @@ import android.view.ViewGroup;
 
 import com.example.mars.R;
 
-import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
+
+import java.util.Objects;
 
 
 public class CameraTranslationFragment extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2 {
     public static final String TAG = "CameraTranslationFragment";
     private CameraBridgeViewBase javaCameraView;
-
-    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(getContext()) {
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                    Log.i(TAG, "OpenCV loaded successfully");
-                    javaCameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
-                    javaCameraView.enableView();
-                    javaCameraView.setCameraPermissionGranted();
-                    break;
-                default:
-                    Log.d(TAG, "OpenCV loaded failed");
-            }
-        }
-    };
-
+    private boolean isCameraTabSelected = false;
+    private boolean isCameraPermissionGranted = true;
+    private boolean isOpenCVLibraryLoad = false;
+    private final int CAMERA_PERMISSION_REQUEST = 0;
+    private int timesAttemptToLoadOpenCVLibrary = 0;
+    private int timesAttemptToRequestCameraPermission = 0;
+    private CameraBridgeViewBase.CvCameraViewFrame currentFrame;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,40 +69,103 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
         return inputFrame.rgba();
     }
 
+    public void onTabSelectionChanged(boolean isCameraTabSelected) {
+        Log.d(TAG, "onTabSelectionChanged is called\nisCameraTabSelected = " + isCameraTabSelected);
+        this.isCameraTabSelected = isCameraTabSelected;
+        if(isCameraTabSelected) {
+            enableCameraPreview();
+        } else {
+            disableCameraPreview();
+        }
+    }
+
+    private void enableCameraPreview() {
+        Log.d(TAG, "enableCameraPreview is called\n");
+        if(isOpenCVLibraryLoad) {
+            Log.d(TAG, "OpenCV library is already loaded\n");
+            checkCameraPermission();
+            if(isCameraPermissionGranted) {
+                Log.d(TAG, "Camera permission is already granted\n");
+                javaCameraView.setCameraPermissionGranted();
+                javaCameraView.enableView();
+            } else {
+                Log.d(TAG, "Camera permission is denied");
+                new Thread(this::requestCameraPermission).start();
+            }
+        } else if(timesAttemptToLoadOpenCVLibrary < 4) {
+            requestLoadOpenCVLibrary();
+        }
+    }
+
+    private void disableCameraPreview() {
+        javaCameraView.disableView();
+    }
+
+    private void pauseCameraPreview() {
+
+    }
+
+    private void resumeCameraPreview() {
+
+    }
+
+    private void requestCameraPermission() {
+        Log.d(TAG, "requestCameraPermission is called");
+    }
+
+    private void checkCameraPermission() {
+        Log.d(TAG, "checkCameraPermission is called");
+        int permissionCheck = ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()),
+                Manifest.permission.CAMERA);
+        isCameraPermissionGranted = PackageManager.PERMISSION_GRANTED == permissionCheck;
+    }
+
+    private void requestLoadOpenCVLibrary() {
+        isOpenCVLibraryLoad = OpenCVLoader.initDebug();
+        timesAttemptToLoadOpenCVLibrary = isOpenCVLibraryLoad ? 0 : timesAttemptToLoadOpenCVLibrary + 1;
+        onLoadOpenCVLibraryResult(isOpenCVLibraryLoad);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        if (!OpenCVLoader.initDebug()) {
-            Log.d(TAG, "OpenCV library not found!");
-        } else {
-            Log.d(TAG, "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        if(isCameraTabSelected) {
+            enableCameraPreview();
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy");
-
-        if(javaCameraView != null) {
-            javaCameraView.disableView();
+        if(isCameraTabSelected) {
+            disableCameraPreview();
         }
     }
 
 
-    public void startCameraPreview() {
-    }
-
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart");
+        if(isCameraTabSelected) {
+            enableCameraPreview();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop");
+        if(isCameraTabSelected) {
+            disableCameraPreview();
+        }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void onLoadOpenCVLibraryResult(boolean result) {
+        enableCameraPreview();
+    }
+
 }

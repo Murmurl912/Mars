@@ -2,13 +2,29 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <org.opencv.android.JavaCamera2View
-        android:id="@+id/main_camera_tab_java_camera_view"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        opencv:show_fps="true" />
+        android:layout_margin="8dp"
+        app:cardCornerRadius="8dp"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <org.opencv.android.JavaCamera2View
+                android:id="@+id/main_camera_tab_java_camera_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                opencv:show_fps="true" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
 
 </LinearLayout>

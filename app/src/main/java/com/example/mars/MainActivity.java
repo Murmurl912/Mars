@@ -50,11 +50,13 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate is called");
         setContentView(R.layout.activity_main);
         setup();
     }
 
     private void setup() {
+        Log.d(TAG, "setup is called");
         // set up top toolbar
         mainToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(mainToolbar);
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     }
 
     private void closeDrawer() {
+        Log.d(TAG, "closeDrawer is called");
         if(drawerLayout == null) {
             return;
         }
@@ -92,26 +95,56 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
-        Log.d(TAG, "closeDrawer()");
     }
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        Log.d(TAG, "Tab Selected at Position: " + tab.getPosition() + " Name: " + tab.getText());
-        if(tab.getPosition() == 1) {
-            cameraTranslationFragment.startCameraPreview();
+        Log.d(TAG, "onTabSelected is called\nTab Selected at Position: " + tab.getPosition() + " Name: " + tab.getText());
+        switch (tab.getPosition()) {
+            case 0: {
+
+            } break;
+
+            case 1: {
+                cameraTranslationFragment.onTabSelectionChanged(true);
+
+            } break;
+
+            case 2: {
+
+            } break;
+
+            default: {
+
+            } break;
         }
     }
 
     @Override
     public void onTabUnselected(TabLayout.Tab tab) {
-        Log.d(TAG, "Tab Unselected at Position: " + tab.getPosition() + " Name: " + tab.getText());
+        Log.d(TAG, "onTabUnselected is called\nTab Unselected at Position: " + tab.getPosition() + " Name: " + tab.getText());
+        switch (tab.getPosition()) {
+            case 0: {
 
+            } break;
+
+            case 1: {
+                cameraTranslationFragment.onTabSelectionChanged(false);
+            } break;
+
+            case 2: {
+
+            } break;
+
+            default: {
+
+            } break;
+        }
     }
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
-        Log.d(TAG, "Tab Reselected at Position: " + tab.getPosition() + " Name: " + tab.getText());
+        Log.d(TAG, "onTabReselected is called\nTab Reselected at Position: " + tab.getPosition() + " Name: " + tab.getText());
         if(tab.getPosition() == 0) {
             Log.d(TAG, "scrollToStart Called");
             textTranslationFragment.scrollToStart();
@@ -120,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Log.d(TAG, "onNavigationItemSelected is called\nMenuItem item id = " + menuItem.getItemId() + "item title = " + menuItem.getTitle());
         switch (menuItem.getItemId()) {
             case R.id.main_navigation_menu_item_home:
                 closeDrawer();
