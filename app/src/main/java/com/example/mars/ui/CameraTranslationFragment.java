@@ -16,7 +16,6 @@ import com.example.mars.R;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
@@ -32,8 +31,9 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS:
                     Log.i(TAG, "OpenCV loaded successfully");
-                    javaCameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_ANY);
+                    javaCameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
                     javaCameraView.enableView();
+                    javaCameraView.setCameraPermissionGranted();
                     break;
                 default:
                     Log.d(TAG, "OpenCV loaded failed");
@@ -89,12 +89,15 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+
         if(javaCameraView != null) {
             javaCameraView.disableView();
         }
     }
+
 
     public void startCameraPreview() {
     }
