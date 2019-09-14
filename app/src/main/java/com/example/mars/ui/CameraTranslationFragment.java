@@ -1,6 +1,7 @@
 package com.example.mars.ui;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -18,9 +19,15 @@ import com.example.mars.R;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 
+import java.util.Date;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class CameraTranslationFragment extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2 {
@@ -33,7 +40,6 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
     private int timesAttemptToLoadOpenCVLibrary = 0;
     private int timesAttemptToRequestCameraPermission = 0;
     private CameraBridgeViewBase.CvCameraViewFrame currentFrame;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -41,7 +47,6 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
         View view = inflater.inflate(R.layout.fragment_camera_translation, container, false);
         javaCameraView = view.findViewById(R.id.main_camera_tab_java_camera_view);
         javaCameraView.setCvCameraViewListener(this);
-
         return view;
     }
 
@@ -65,17 +70,24 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Log.d(TAG, "onCameraFrame: inputFrame = " + inputFrame);
+        Mat frame = inputFrame.rgba();
+        Core.transpose(frame, frame);
+        Core.flip(frame, frame, 1);
+        Imgproc.resize(frame, frame, new Size(frame.height(), frame.width()));
+        return frame;
+    }
 
-        return inputFrame.rgba();
+    private void processCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+
     }
 
     public void onTabSelectionChanged(boolean isCameraTabSelected) {
         Log.d(TAG, "onTabSelectionChanged is called\nisCameraTabSelected = " + isCameraTabSelected);
         this.isCameraTabSelected = isCameraTabSelected;
         if(isCameraTabSelected) {
-            enableCameraPreview();
+            new Thread(this::enableCameraPreview).start();
         } else {
-            disableCameraPreview();
+            new Thread(this::disableCameraPreview).start();
         }
     }
 
@@ -87,18 +99,38 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
             if(isCameraPermissionGranted) {
                 Log.d(TAG, "Camera permission is already granted\n");
                 javaCameraView.setCameraPermissionGranted();
-                javaCameraView.enableView();
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        Objects.requireNonNull(getActivity()).runOnUiThread(()->{
+                            javaCameraView.enableView();
+                        });
+                    }
+                };
+                Timer timer = new Timer();
+                timer.schedule(task, 350);
+
             } else {
                 Log.d(TAG, "Camera permission is denied");
                 new Thread(this::requestCameraPermission).start();
             }
         } else if(timesAttemptToLoadOpenCVLibrary < 4) {
-            requestLoadOpenCVLibrary();
+            new Thread(this::requestLoadOpenCVLibrary).start();
         }
     }
 
     private void disableCameraPreview() {
-        javaCameraView.disableView();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                Objects.requireNonNull(getActivity()).runOnUiThread(()->{
+                    javaCameraView.disableView();
+                });
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(task, 400);
+
     }
 
     private void pauseCameraPreview() {
@@ -166,6 +198,10 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
 
     private void onLoadOpenCVLibraryResult(boolean result) {
         enableCameraPreview();
+    }
+
+    public interface OnProcessCameraFrameComplete {
+        void onProcessCameraFrameComplete();
     }
 
 }
