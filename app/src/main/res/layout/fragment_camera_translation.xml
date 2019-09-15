@@ -13,16 +13,56 @@
         app:cardCornerRadius="8dp"
         >
 
-        <LinearLayout
-            android:orientation="vertical"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <org.opencv.android.JavaCamera2View
+                android:layout_gravity="top"
                 android:id="@+id/main_camera_tab_java_camera_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 opencv:show_fps="true" />
-        </LinearLayout>
+            <LinearLayout
+                android:background="#26E6E8E7"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarStyle">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+                <ImageButton
+                    android:src="@drawable/ic_image_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/main_camera_tab_load_image_from_file"
+                    style="?android:attr/buttonBarButtonStyle"/>
+                <ImageButton
+                    android:src="@drawable/ic_flash_off_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/main_camera_tab_flash"
+                    style="?android:attr/buttonBarButtonStyle"/>
+                <ImageButton
+                    android:src="@drawable/ic_stop_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/main_camera_tab_stop_or_resume"
+                    style="?android:attr/buttonBarButtonStyle"/>
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_photo_light"
+                    android:id="@+id/main_camera_tab_save_image"
+                    style="?android:attr/buttonBarButtonStyle"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+        </FrameLayout>
 
     </androidx.cardview.widget.CardView>
 

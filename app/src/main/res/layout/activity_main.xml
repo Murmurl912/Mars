@@ -85,18 +85,21 @@
                                 android:id="@+id/main_text_tab_item"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:icon="@drawable/ic_text_light"
                                 android:text="Text" />
 
                             <com.google.android.material.tabs.TabItem
                                 android:id="@+id/main_camera_tab_item"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:icon="@drawable/ic_camera_light"
                                 android:text="Camera" />
 
                             <com.google.android.material.tabs.TabItem
                                 android:id="@+id/main_voice_tab_item"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:icon="@drawable/ic_mic_light"
                                 android:text="Voice"
                                 />
 

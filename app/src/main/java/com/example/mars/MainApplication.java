@@ -7,6 +7,7 @@ import com.example.mars.database.DatabaseManager;
 public class MainApplication extends Application {
 
     public DatabaseManager databaseManager;
+
     public MainApplication() {
         super();
     }
@@ -15,6 +16,9 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
         databaseManager = new DatabaseManager(getBaseContext());
+    }
+
+    public void loadOpenCVLib() {
 
     }
 }
