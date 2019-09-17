@@ -2,7 +2,6 @@ package com.example.mars;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -14,20 +13,15 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.mars.ui.CameraTranslationFragment;
-import com.example.mars.ui.TextTranslationFragment;
-import com.example.mars.ui.VoiceTranslationFragment;
+import com.example.mars.ui.camera.CameraTranslationFragment;
+import com.example.mars.ui.text.TextTranslationFragment;
+import com.example.mars.ui.voice.VoiceTranslationFragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, NavigationView.OnNavigationItemSelectedListener {

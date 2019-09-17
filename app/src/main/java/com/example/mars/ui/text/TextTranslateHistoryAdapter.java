@@ -1,4 +1,4 @@
-package com.example.mars.ui;
+package com.example.mars.ui.text;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -14,14 +14,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mars.MainApplication;
 import com.example.mars.R;
 import com.example.mars.database.History;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;

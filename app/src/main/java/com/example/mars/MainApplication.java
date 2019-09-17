@@ -3,10 +3,12 @@ package com.example.mars;
 import android.app.Application;
 
 import com.example.mars.database.DatabaseManager;
+import com.example.mars.translate.TranslateService;
 
 public class MainApplication extends Application {
 
     public DatabaseManager databaseManager;
+    public TranslateService translateService;
 
     public MainApplication() {
         super();
@@ -18,7 +20,12 @@ public class MainApplication extends Application {
         databaseManager = new DatabaseManager(getBaseContext());
     }
 
-    public void loadOpenCVLib() {
-
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
+
+    public TranslateService getTranslateService() {
+        return translateService;
+    }
+
 }

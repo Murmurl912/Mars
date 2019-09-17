@@ -1,9 +1,16 @@
-package com.example.mars.ui;
+package com.example.mars.ui.camera;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,9 +23,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOverlay;
 import android.widget.ImageButton;
 
 import com.example.mars.R;
+import com.example.mars.detector.TextBox;
 import com.example.mars.detector.TextDetector;
 
 import org.opencv.android.CameraBridgeViewBase;
@@ -56,6 +65,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
 
+import static android.graphics.Paint.ANTI_ALIAS_FLAG;
+
 
 public class CameraTranslationFragment extends Fragment implements CameraBridgeViewBase.CvCameraViewListener2 {
     public static final String TAG = "CameraTranslationFragment";
@@ -69,7 +80,7 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
     private CameraBridgeViewBase.CvCameraViewFrame currentFrame;
 
     private long openCameraFrameDaley = 400;
-    private long closeCameraFrameDaley = 200;
+    private long closeCameraFrameDaley = 1200;
 
     private Timer timer;
     private boolean isFreezingFrame = false;
@@ -89,6 +100,8 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
     private ImageButton capture;
 
     private TextDetector detector;
+    private boolean isProcessing = false;
+    private CameraGraphicsOverlay overlay;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -126,12 +139,14 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
     @Override
     public void onCameraViewStarted(int width, int height) {
         Log.d(TAG, "onCameraViewStarted: width = " + width + ", height = " + height);
-        detector = new TextDetector();
+        detector = new TextDetector(getContext());
+        overlay = new CameraGraphicsOverlay(javaCameraView);
     }
 
     @Override
     public void onCameraViewStopped() {
         Log.d(TAG, "onCameraViewStopped");
+        overlay.clear();
 
     }
 
@@ -150,6 +165,23 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
                 frame = frozenFrame;
                 isFrameFrozen = true;
             }
+        }
+
+        if(!isProcessing) {
+            isProcessing = true;
+            Mat clone = frame;
+            detector.onFrameArrive(clone, new TextDetector.OnDetectComplete() {
+                @Override
+                public void onDetectComplete(List<TextBox> boxes) {
+                    Objects.requireNonNull(getActivity()).runOnUiThread(()->{
+                        if(!boxes.isEmpty()) {
+                            overlay.clear();
+                            overlay.add(boxes);
+                        }
+                        isProcessing = false;
+                    });
+                }
+            });
         }
 
         return frame;
@@ -314,5 +346,89 @@ public class CameraTranslationFragment extends Fragment implements CameraBridgeV
         enableCameraPreview();
     }
 
+    class BannerDrawable extends Drawable {
 
+        private final double SQRT_2 = Math.sqrt(2);
+        private final Rect mTextBounds;
+        private Paint mPaintFill;
+        private Paint mPaintText;
+        private String mMessage = "I'M A PIRATE BANNER";
+        private int mBannerWidth = 100;
+        private int mTextSize;
+
+        public BannerDrawable() {
+            initPaintFill();
+            initPaintText();
+            mTextBounds = new Rect();
+        }
+
+        private void initPaintFill() {
+            mPaintFill = new Paint(ANTI_ALIAS_FLAG);
+            mPaintFill.setStyle(Paint.Style.FILL);
+            mPaintFill.setColor(Color.parseColor("#80ffffff"));
+        }
+
+        private void initPaintText() {
+            mPaintText = new Paint(ANTI_ALIAS_FLAG);
+            mPaintText.setStyle(Paint.Style.FILL);
+            mPaintText.setColor(Color.WHITE);
+            mPaintText.setTextSize(20);
+            mPaintText.setShadowLayer(4.0f, 2.0f, 2.0f, Color.BLACK);
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            Rect bounds = getBounds();
+            if (bounds.isEmpty()) {
+                bounds = canvas.getClipBounds();
+            }
+            float width = bounds.width();
+
+            adaptTextSize((int) (width * 0.9), (int) (mBannerWidth * 0.9));
+
+            float bannerHyp = (float) (mBannerWidth * SQRT_2);
+
+            // canvas.translate(0, bounds.centerY() - mBannerWidth);
+            // canvas.rotate(45, bounds.centerX(), bounds.centerY() - mBannerWidth);
+            // canvas.drawRect(bounds.left - bannerHyp, bounds.top, bounds.right + bannerHyp, bounds.top + mBannerWidth, mPaintFill);
+            canvas.drawRect( 10, 10, 200, 200, mPaintFill);
+
+            // canvas.drawText(mMessage, bounds.centerX() - mTextBounds.centerX(), mBannerWidth / 2 + mTextBounds.height() / 2, mPaintText);
+        }
+
+        private void adaptTextSize(float width, int height) {
+            if (mTextSize > 0) {
+                mPaintText.setTextSize(mTextSize);
+                return;
+            }
+            int textSize = 10;
+            int textHeight;
+            int textWidth;
+            boolean stop = false;
+            while (!stop) {
+                mTextSize = textSize++;
+                mPaintText.setTextSize(mTextSize);
+                mPaintText.getTextBounds(mMessage, 0, mMessage.length(), mTextBounds);
+
+                textHeight = mTextBounds.height();
+                textWidth = mTextBounds.width();
+
+                stop = textHeight >= height || textWidth >= width;
+            }
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter cf) {
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.OPAQUE;
+        }
+    }
 }

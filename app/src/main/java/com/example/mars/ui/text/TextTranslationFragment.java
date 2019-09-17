@@ -1,4 +1,4 @@
-package com.example.mars.ui;
+package com.example.mars.ui.text;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -27,6 +27,7 @@ import com.example.mars.R;
 import com.example.mars.database.DatabaseManager;
 import com.example.mars.database.History;
 import com.example.mars.translate.TranslateService;
+import com.example.mars.ui.text.TextTranslateHistoryAdapter;
 
 import java.util.Objects;
 

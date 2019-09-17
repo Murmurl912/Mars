@@ -1,4 +1,4 @@
-package com.example.mars.ui;
+package com.example.mars.ui.voice;
 
 import android.os.Bundle;
 
